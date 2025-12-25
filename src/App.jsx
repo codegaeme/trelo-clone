@@ -1,5 +1,5 @@
-import Board from './pages/Boards/_id'
-import './App.css'
+import Board from '~/pages/Boards/_id'
+import '~/App.css'
 
 function App() {
 

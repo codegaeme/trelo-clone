@@ -1,28 +1,14 @@
-import { Box, Container } from '@mui/material'
+import { Container } from '@mui/material'
 import Appbar from '../../components/AppBar'
 import BoardBar from './BoardBar'
 import BoardContent from './BoardContent'
+import Divider from '@mui/material/Divider';
 const Board = () => {
     return (
-        <Container
-            disableGutters
-            maxWidth={false}
-            sx={{
-                height: '100vh',
-                backgroundColor: 'primary.main',
-                width: '100vw',
-                margin: 0,
-                padding: 0
-            }}
-        >
+        <Container disableGutters maxWidth={false} sx={{ height: '100vh', backgroundColor: 'primary.main', width: '100vw', margin: 0, padding: 0 }}>
             <Appbar />
             <BoardBar />
-            <BoardContent/>
-
-
-
-
-          
+            <BoardContent />
 
         </Container>
     )
