@@ -10,6 +10,8 @@ const BOARD_CONTENT_HEIGHT = `calc(100vh - ${APP_BAR_HEIGHT} - ${BOARD_BAR_HEIGH
 const COLOR_APP_BAR = '#328cc0ff'
 const COLOR_BOARD_BAR = '#0c7dbfff'
 const COLOR_BOARD_CONTENT = '#37b0f5ff'
+const COLUMN_HEADER_HEIGHT = '50px';
+const COLUMN_FOOTER_HEIGHT = '56px';
 // Create a theme instance.
 const theme = createTheme({
   trello: {
@@ -19,6 +21,9 @@ const theme = createTheme({
     colorAppBar: COLOR_APP_BAR,
     colorBoardBar: COLOR_BOARD_BAR,
     colorBoardContent: COLOR_BOARD_CONTENT,
+    columnHeaderHeight: COLUMN_HEADER_HEIGHT,
+    columnFooterHeight: COLUMN_FOOTER_HEIGHT,
+
   },
   cssVariables: true,
   palette: {

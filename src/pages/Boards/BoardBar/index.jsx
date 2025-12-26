@@ -5,7 +5,8 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import Share from "./Share";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-const BoardBar = () => {
+const BoardBar = (props) => {
+    const {board} = props;
     return (
         <Box px={2} sx={{
             backgroundColor:  (theme) => theme.trello.colorBoardBar,
@@ -25,7 +26,7 @@ const BoardBar = () => {
 
             }}>
                 <Typography fontWeight={1000}>
-                    Bảng Trello của tôi
+                   {board?.title}
                 </Typography>
 
 
