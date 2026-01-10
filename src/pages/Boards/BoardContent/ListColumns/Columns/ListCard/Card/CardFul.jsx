@@ -7,15 +7,31 @@ import Typography from '@mui/material/Typography';
 import GroupIcon from '@mui/icons-material/Group';
 import CommentIcon from '@mui/icons-material/Comment';
 import AttachmentIcon from '@mui/icons-material/Attachment';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 const CardFul = ({ card }) => {
     const hasActions = !!(card?.memberIds?.length || card?.comments?.length || card?.attachments?.length);
 
+
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: card._id, data: { ...card } });
+
+    const dndKitCardStyles = {
+        transform: CSS.Translate.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+        touchAction: 'none'
+    };
     return (
-        <Card sx={{
-            cursor: 'pointer',
-            boxShadow: '0 1px 1px rgba(0,0,0,0.2)',
-            overflow: 'unset'
-        }}>
+        <Card
+            ref={setNodeRef}
+            style={dndKitCardStyles}
+            {...attributes}
+            {...listeners}
+            sx={{
+                cursor: 'pointer',
+                boxShadow: '0 1px 1px rgba(0,0,0,0.2)',
+                overflow: 'unset'
+            }}>
             {card.cover && <CardMedia sx={{ height: 140 }} image="https://d1hjkbq40fs2x4.cloudfront.net/2017-08-21/files/landscape-photography_1645.jpg" title="green iguana" />}
             <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
                 <Typography >{card.title}</Typography>

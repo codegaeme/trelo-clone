@@ -13,32 +13,37 @@ const ColumnBoard = (props) => {
 
     const dndKitColumnStyles = {
         transform: CSS.Translate.toString(transform),
+        height: '100%',
         transition,
-        opacity: isDragging ? 0.5 : 1,
-        touchAction:'none'
+        opacity: isDragging ? 0.5 : undefined,
+        touchAction: 'none'
     };
     return (
-        <Box
-            ref={setNodeRef}
+        <div ref={setNodeRef}
             style={dndKitColumnStyles}
             {...attributes}
-            {...listeners}
-            sx={{
-                minWidth: '300px',
-                maxWidth: '300px',
-                bgcolor: '#e7e7e7ff',
-                ml: '2',
-                borderRadius: '6px',
-                color: 'black',
-                height: 'fit-content',
-                flexShrink: 0
-            }}>
 
-            <HeaderCard columnHeader={column} />
-            <ListCard columnCart={orderedColumns} />
-            <FooterCart />
+        >
+            <Box
+                {...listeners}
+                sx={{
+                    minWidth: '300px',
+                    maxWidth: '300px',
+                    bgcolor: '#e7e7e7ff',
+                    ml: '2',
+                    borderRadius: '6px',
+                    color: 'black',
+                    height: 'fit-content',
+                    flexShrink: 0
+                }}>
 
-        </Box>
+                <HeaderCard columnHeader={column} />
+                <ListCard columnCart={orderedColumns} />
+                <FooterCart />
+
+            </Box>
+        </div>
+
     )
 }
 export default ColumnBoard;

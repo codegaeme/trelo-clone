@@ -1,36 +1,40 @@
 import { Box } from "@mui/material";
 import CardFul from "./Card/CardFul";
 import CardBoad from "./Card/CardBoad";
-const ListCard = ({columnCart}) => {
+import { verticalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
+const ListCard = ({ columnCart }) => {
 
-    
+
     return (
-        <Box sx={{
+        <SortableContext items={columnCart?.map(c => c._id)} strategy={verticalListSortingStrategy}>
+            <Box sx={{
 
-            p: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 1,
-            overflowX: 'hidden',
-            overflowY: 'auto',
-
-
-            maxHeight: (theme) => `calc(${theme.trello.boardContentHeight} - 20px - ${theme.trello.columnHeaderHeight} - ${theme.trello.columnFooterHeight} - 32px)`,
+                p: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1,
+                overflowX: 'hidden',
+                overflowY: 'auto',
 
 
-            '&::-webkit-scrollbar': { width: '8px' },
-            '&::-webkit-scrollbar-thumb': { backgroundColor: '#dcdcdc', borderRadius: '8px', border: '2px solid transparent' },
-            '&::-webkit-scrollbar-thumb:hover': { backgroundColor: '#a0a0a0' },
-            '&::-webkit-scrollbar-track': { backgroundColor: 'transparent' },
+                maxHeight: (theme) => `calc(${theme.trello.boardContentHeight} - 20px - ${theme.trello.columnHeaderHeight} - ${theme.trello.columnFooterHeight} - 32px)`,
 
-        }}>
 
-        {columnCart?.map((card)=><CardFul  key={card._id} card={card} />)}
-         
-      
+                '&::-webkit-scrollbar': { width: '8px' },
+                '&::-webkit-scrollbar-thumb': { backgroundColor: '#dcdcdc', borderRadius: '8px', border: '2px solid transparent' },
+                '&::-webkit-scrollbar-thumb:hover': { backgroundColor: '#a0a0a0' },
+                '&::-webkit-scrollbar-track': { backgroundColor: 'transparent' },
 
-            {/* Các Card khác (Giữ nguyên) */}
-        </Box>
+            }}>
+
+                {columnCart?.map((card) => <CardFul key={card._id} card={card} />)}
+
+
+
+                {/* Các Card khác (Giữ nguyên) */}
+            </Box>
+        </SortableContext>
     )
+
 }
 export default ListCard

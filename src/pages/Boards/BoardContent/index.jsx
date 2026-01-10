@@ -2,22 +2,29 @@ import { Box, Button } from "@mui/material";
 import ColumnBoard from "./ListColumns/ColumnBoard";
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import { mapOrder } from '~/utils/sorts'
-import { DndContext, PointerSensor, useSensor, useSensors, MouseSensor, TouchSensor } from "@dnd-kit/core";
+import { DndContext, PointerSensor, useSensor, useSensors, MouseSensor, TouchSensor, DragOverlay,defaultDropAnimationSideEffects } from "@dnd-kit/core";
 import { arrayMove, horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import { useEffect, useState } from "react";
-
+import CardFul from "./ListColumns/Columns/ListCard/Card/CardFul";
+const ACTIVE_DRAG_ITEM_TYPE = {
+    'COLUMN': 'ACTIVE_DRAG_ITEM_TYPE_COLUMN',
+    'CARD': 'ACTIVE_DRAG_ITEM_TYPE_CARD'
+}
 const BOARD_CONTENT_PADDING_Y = '20px';
 
 const BoardContent = (props) => {
     // const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
     const mountSensor = useSensor(MouseSensor, { activationConstraint: { distance: 10 } })
-    const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance:5 } })
+    const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } })
 
     // const sensors = useSensors(pointerSensor)
-       const sensors = useSensors(mountSensor,touchSensor)
+    const sensors = useSensors(mountSensor, touchSensor)
 
     const { board } = props;
     const [orderedColumns, setOrderedColumns] = useState([]);
+    const [activeDragItemId, setActiveDragItemId] = useState(null);
+    const [activeDragItemType, setActiveDragItemType] = useState(null);
+    const [activeDragItemData, setActiveDragItemData] = useState(null);
     useEffect(() => {
         setOrderedColumns(mapOrder(board?.columns, board?.columnOrderIds, '_id'))
     }, [board])
@@ -35,11 +42,33 @@ const BoardContent = (props) => {
             const dndOrderedColumnsIds = dndOrderedColumns.map(c => c._id);
             setOrderedColumns(dndOrderedColumns)
         }
-
+        setActiveDragItemId(null)
+        setActiveDragItemType(null)
+        setActiveDragItemData(null)
 
     }
+    const handelDragStart = (e) => {
+        console.log(e);
+
+        setActiveDragItemId(e?.active?.id)
+        setActiveDragItemType(e?.active?.data?.current?.columnId ? ACTIVE_DRAG_ITEM_TYPE.CARD : ACTIVE_DRAG_ITEM_TYPE.COLUMN)
+        setActiveDragItemData(e?.active?.data?.current)
+
+    }
+    const customDropAnimation = {
+        sideEffects: defaultDropAnimationSideEffects({
+            styles: {
+                active: {
+                    opacity: '0.5',
+                },
+            },
+        }),
+    };
     return (
-        <DndContext onDragEnd={handelDragEnd} sensors={sensors}>
+        <DndContext
+            sensors={sensors}
+            onDragStart={handelDragStart}
+            onDragEnd={handelDragEnd}>
             <Box sx={{
                 backgroundColor: (theme) => theme.trello.colorBoardContent,
                 width: '100%',
@@ -58,7 +87,11 @@ const BoardContent = (props) => {
                 gap: '25px'
 
             }}>
-
+                <DragOverlay dropAnimation={customDropAnimation}>
+                    {(!activeDragItemType) && null}
+                    {(activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN && <ColumnBoard column={activeDragItemData} />)}
+                    {(activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD && <CardFul card={activeDragItemData} />)}
+                </DragOverlay>
                 <SortableContext items={orderedColumns?.map(c => c._id)} strategy={horizontalListSortingStrategy}>
                     {
                         orderedColumns?.map(column => <ColumnBoard key={column._id} column={column} />)
