@@ -81,7 +81,7 @@ const BoardContent = (props) => {
                 //kiem tra card dang keo co trong chuwa neu co xoa bo
                 nextOverColumns.cards = nextOverColumns.cards.filter(card => card._id !== activeDraggingCardId)
                 //xoa card giu cho
-                 nextOverColumns.cards =  nextOverColumns.cards.filter(card=> !card.FE_PlaceholderCard)
+                nextOverColumns.cards = nextOverColumns.cards.filter(card => !card.FE_PlaceholderCard)
                 //them card vao column
                 nextOverColumns.cards = nextOverColumns.cards.toSpliced(newCardIndex, 0, rebuild_activeDraggingCardData)
                 //sap xep lai
@@ -138,7 +138,7 @@ const BoardContent = (props) => {
     //end
     const handelDragEnd = (e) => {
         const { active, over } = e
-
+        if (!active || !over) return
         if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD) {
             //card dang dc keo
             const { id: activeDraggingCardId, data: { current: activeDraggingCardData } } = active
@@ -147,6 +147,7 @@ const BoardContent = (props) => {
             //tim column
             const activeColumn = findColumnByCardId(activeDraggingCardId)
             const overColumn = findColumnByCardId(overCardId)
+
 
             //keo card khac column
             if (!activeColumn || !overColumn) return
