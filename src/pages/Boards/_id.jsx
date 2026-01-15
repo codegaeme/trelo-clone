@@ -4,11 +4,13 @@ import BoardBar from './BoardBar'
 import BoardContent from './BoardContent'
 import { useEffect, useState } from 'react';
 import { fetchBoardDetailApi } from '~/apis';
+// import { mockData } from '~/apis/mock-data';
+
 const Board = () => {
    const [board,setBoard] = useState(null)
 
    useEffect(()=>{
-    const boardId = '6968253e4626c2a46d418519'
+    const boardId = '6968fb3b1498ae98768a569b'
 
     fetchBoardDetailApi(boardId)
     .then(board => {  

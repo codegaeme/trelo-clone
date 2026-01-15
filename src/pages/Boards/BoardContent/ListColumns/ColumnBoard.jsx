@@ -5,7 +5,9 @@ import FooterCart from "./Columns/FooterColumn";
 import { mapOrder } from '~/utils/sorts'
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useState } from "react";
 const ColumnBoard = (props) => {
+    const [openNewFormAddCard, setOpenNewFormAddCard] = useState(false)
     const { column } = props
     const orderedColumns = mapOrder(column?.cards, column?.cardOrderIds, '_id')
 
@@ -18,6 +20,11 @@ const ColumnBoard = (props) => {
         opacity: isDragging ? 0.5 : undefined,
         touchAction: 'none'
     };
+    
+     const newFormAddCard = () => {
+    
+        setOpenNewFormAddCard(!openNewFormAddCard)
+    }
     return (
         <div ref={setNodeRef}
             style={dndKitColumnStyles}
@@ -38,8 +45,8 @@ const ColumnBoard = (props) => {
                 }}>
 
                 <HeaderCard columnHeader={column} />
-                <ListCard columnCart={orderedColumns} />
-                <FooterCart />
+                <ListCard columnCart={orderedColumns} newFormAddCard={newFormAddCard} newAddCard= {openNewFormAddCard} />
+                <FooterCart newFormAddCard={newFormAddCard} newAddCard= {openNewFormAddCard} />
 
             </Box>
         </div>

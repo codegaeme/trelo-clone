@@ -1,13 +1,17 @@
-import { Box, Button } from "@mui/material";
+import { Box, Button, IconButton, TextField } from "@mui/material";
 import ColumnBoard from "./ListColumns/ColumnBoard";
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import { mapOrder } from '~/utils/sorts'
-import { DndContext, PointerSensor, useSensor, useSensors, MouseSensor, TouchSensor, DragOverlay, defaultDropAnimationSideEffects, closestCorners, pointerWithin, rectIntersection, getFirstCollision, closestCenter } from "@dnd-kit/core";
+import { DndContext, PointerSensor, useSensor, useSensors, DragOverlay, defaultDropAnimationSideEffects, closestCorners, pointerWithin, rectIntersection, getFirstCollision, closestCenter } from "@dnd-kit/core";
 import { arrayMove, horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 import { useCallback, useEffect, useRef, useState } from "react";
 import CardFul from "./ListColumns/Columns/ListCard/Card/CardFul";
 import { cloneDeep, isEmpty } from "lodash";
 import { generatePlaceholderCard } from "~/utils/formatters";
+import ClearIcon from '@mui/icons-material/Clear';
+import {MouseSensor,TouchSensor} from '~/customLibarys/DndKitSenSor';
+import { toast } from "react-toastify";
+
 const ACTIVE_DRAG_ITEM_TYPE = {
     'COLUMN': 'ACTIVE_DRAG_ITEM_TYPE_COLUMN',
     'CARD': 'ACTIVE_DRAG_ITEM_TYPE_CARD'
@@ -29,11 +33,27 @@ const BoardContent = (props) => {
     const [activeDragItemData, setActiveDragItemData] = useState(null);
     const [oldColumn, setOldColumn] = useState(null);
     const lastOverId = useRef(null)
+    const [openNewColumnForm, setOpenNewColumnForm] = useState(false)
+    const toggleOpenNewColumnForm = () => setOpenNewColumnForm(!openNewColumnForm)
     useEffect(() => {
         setOrderedColumns(mapOrder(board?.columns, board?.columnOrderIds, '_id'))
     }, [board])
 
     //function xu li cap nhat state keo card
+    const [newColumnTitle, setNewColumnTitle] = useState("")
+    const addNewColumn = () => {
+        if (!newColumnTitle) {
+           toast.error('Please enter columns title')
+
+            return
+        }
+
+        console.log(newColumnTitle);
+
+        toggleOpenNewColumnForm()
+        setNewColumnTitle("")
+
+    }
 
     const moveCardBetweenDifferentColumns = (
         overColumn,
@@ -284,17 +304,115 @@ const BoardContent = (props) => {
                     }
                 </SortableContext>
 
-                <Box sx={{
-                    minWidth: '200px',
-                    maxWidth: '200px',
-                    mx: '2',
-                    borderRadius: '6px',
-                    height: 'fit-content',
-                    bgcolor: '#ffffff3d'
+                {!openNewColumnForm
+                    ? <Box onClick={toggleOpenNewColumnForm} sx={{
+                        minWidth: '260px',
+                        maxWidth: '260px',
+                        mx: '2',
+                        borderRadius: '6px',
+                        height: 'fit-content',
+                        bgcolor: '#ffffff3d'
 
-                }}>
-                    <Button startIcon={<LibraryAddIcon />} sx={{ color: '#fff', width: '100%', justifyContent: 'flex-start', pl: '2.5', py: '1' }}>Add new column</Button>
-                </Box>
+                    }}>
+                        <Button startIcon={<LibraryAddIcon />} sx={{ color: '#fff', width: '100%', justifyContent: 'flex-start', pl: '2.5', py: '1' }}>Add new column</Button>
+                    </Box>
+                    :
+                    <Box
+
+                        sx={{
+                            minWidth: '260px',
+                            maxWidth: '260px',
+                            mx: '2',
+                            borderRadius: '6px',
+                            height: 'fit-content',
+                            bgcolor: '#e7e7e7ff',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 1
+                        }}>
+                        <TextField
+                            type="text"
+                            size="small"
+                            variant="outlined"
+                            autoFocus
+                            placeholder="Enter title columns"
+                            value={newColumnTitle}
+                            onChange={e => setNewColumnTitle(e.target.value)}
+                            sx={{
+                                width: '100%',
+                                bgcolor: '#ffffff3d', // nền tối
+                                borderRadius: '10px',
+                                padding: 1,
+
+                                '& .MuiOutlinedInput-root': {
+                                    color: '#000000', // chữ trắng xám
+                                    borderRadius: '10px',
+
+                                    '& fieldset': {
+                                        borderColor: '#60a5fa', // viền xanh nhạt
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: '#93c5fd',
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#3b82f6',
+                                        borderWidth: '2px',
+                                    },
+                                },
+
+                                '& .MuiInputBase-input': {
+                                    padding: '10px 12px',
+                                },
+
+                                '& input::placeholder': {
+                                    color: '#9ca3af',
+                                    opacity: 1,
+                                },
+                            }}
+                        />
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                                padding: 1
+                            }}
+                        >
+                            <Button
+                                onClick={addNewColumn}
+                                variant="contained"
+                                sx={{
+                                    textTransform: "none",
+                                    backgroundColor: "#60a5fa",
+                                    color: "#f3f3f3",
+                                    borderRadius: "2px",
+                                    px: 2,
+                                    "&:hover": {
+                                        backgroundColor: "#3b82f6",
+                                    },
+                                }}
+                            >
+                                Add New Column
+                            </Button>
+
+                            <IconButton
+                                onClick={toggleOpenNewColumnForm}
+                                sx={{
+                                    color: "#4f8aff",
+                                    "&:hover": {
+                                        color:'white',
+                                        backgroundColor: "#446499",
+                                    },
+                                }}
+                            >
+                                <ClearIcon />
+                            </IconButton>
+                        </Box>
+
+
+                    </Box>
+                }
+
 
 
             </Box>
