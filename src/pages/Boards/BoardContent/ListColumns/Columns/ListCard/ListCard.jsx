@@ -5,17 +5,25 @@ import { IconButton, TextField } from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { times } from "lodash";
 const ListCard = (props) => {
 
-    const { columnCart, newAddCard, newFormAddCard } = props
+    const { columnCart, newAddCard, newFormAddCard ,createNewCard,column} = props
 
     const [newCardTitle, setNewCardTitle] = useState("")
 
-    const addNewCard = () => {
+    const addNewCard = async () => {
         if (!newCardTitle) {
             toast.error("Please enter title cards")
             return
         }
+
+
+        const newCardData = {
+            title : newCardTitle,
+            columnId:column._id
+        }
+        await createNewCard(newCardData)
 
         setNewCardTitle("")
         newFormAddCard(false)

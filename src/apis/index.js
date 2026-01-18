@@ -1,6 +1,19 @@
 import axios from "axios";
 import { BASE_URL } from "~/utils/constants";
-export const fetchBoardDetailApi = async(id) => {
-    const response =await axios.get(`${BASE_URL}/v1/boards/${id}`)
+//board
+export const fetchBoardDetailApi = async (id) => {
+    const response = await axios.get(`${BASE_URL}/v1/boards/${id}`)
     return response.data
-}   
+}
+//column
+export const createNewColumns = async (newColumnData) => {
+    const response = await axios.post(`${BASE_URL}/v1/columns`,newColumnData)
+    return response.data
+}
+
+//cards
+
+export const createNewCards = async (newCardData) => {
+    const response = await axios.post(`${BASE_URL}/v1/cards`,newCardData)
+    return response.data
+}

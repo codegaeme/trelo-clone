@@ -26,7 +26,7 @@ const BoardContent = (props) => {
     // const sensors = useSensors(pointerSensor)
     const sensors = useSensors(mountSensor, touchSensor)
 
-    const { board } = props;
+    const { board ,createNewColumns,createNewCard} = props;
     const [orderedColumns, setOrderedColumns] = useState([]);
     const [activeDragItemId, setActiveDragItemId] = useState(null);
     const [activeDragItemType, setActiveDragItemType] = useState(null);
@@ -41,14 +41,16 @@ const BoardContent = (props) => {
 
     //function xu li cap nhat state keo card
     const [newColumnTitle, setNewColumnTitle] = useState("")
-    const addNewColumn = () => {
+    const addNewColumn = async() => {
         if (!newColumnTitle) {
            toast.error('Please enter columns title')
-
             return
         }
+        const newColumnData = {
+            "title":newColumnTitle
+        }
 
-        console.log(newColumnTitle);
+        await createNewColumns(newColumnData)
 
         toggleOpenNewColumnForm()
         setNewColumnTitle("")
@@ -300,7 +302,7 @@ const BoardContent = (props) => {
                 </DragOverlay>
                 <SortableContext items={orderedColumns?.map(c => c._id)} strategy={horizontalListSortingStrategy}>
                     {
-                        orderedColumns?.map(column => <ColumnBoard key={column._id} column={column} />)
+                        orderedColumns?.map(column => <ColumnBoard key={column._id} column={column} createNewCard={createNewCard} />)
                     }
                 </SortableContext>
 
