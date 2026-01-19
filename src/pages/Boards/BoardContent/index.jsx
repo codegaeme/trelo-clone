@@ -11,6 +11,7 @@ import { generatePlaceholderCard } from "~/utils/formatters";
 import ClearIcon from '@mui/icons-material/Clear';
 import {MouseSensor,TouchSensor} from '~/customLibarys/DndKitSenSor';
 import { toast } from "react-toastify";
+import { updateBoardDetailApi } from "~/apis";
 
 const ACTIVE_DRAG_ITEM_TYPE = {
     'COLUMN': 'ACTIVE_DRAG_ITEM_TYPE_COLUMN',
@@ -26,7 +27,7 @@ const BoardContent = (props) => {
     // const sensors = useSensors(pointerSensor)
     const sensors = useSensors(mountSensor, touchSensor)
 
-    const { board ,createNewColumns,createNewCard} = props;
+    const { board ,createNewColumns,createNewCard,moveColumns} = props;
     const [orderedColumns, setOrderedColumns] = useState([]);
     const [activeDragItemId, setActiveDragItemId] = useState(null);
     const [activeDragItemType, setActiveDragItemType] = useState(null);
@@ -158,7 +159,7 @@ const BoardContent = (props) => {
     }
 
     //end
-    const handelDragEnd = (e) => {
+    const handelDragEnd = async(e) => {
         const { active, over } = e
         if (!active || !over) return
         if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD) {
@@ -207,7 +208,11 @@ const BoardContent = (props) => {
                 const oldColumnIndex = orderedColumns.findIndex(c => c._id === active.id)
                 const newColumnIndex = orderedColumns.findIndex(c => c._id === over.id)
                 const dndOrderedColumns = arrayMove(orderedColumns, oldColumnIndex, newColumnIndex)
-                const dndOrderedColumnsIds = dndOrderedColumns.map(c => c._id);
+                console.log('orderedColumns:',orderedColumns);
+                
+                
+                moveColumns(dndOrderedColumns)
+              
                 setOrderedColumns(dndOrderedColumns)
             }
         }

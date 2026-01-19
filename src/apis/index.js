@@ -5,6 +5,12 @@ export const fetchBoardDetailApi = async (id) => {
     const response = await axios.get(`${BASE_URL}/v1/boards/${id}`)
     return response.data
 }
+
+export const updateBoardDetailApi = async (id, updateData) => {
+ 
+    const response = await axios.put(`${BASE_URL}/v1/boards/${id}`, updateData)
+    return response.data
+}
 //column
 export const createNewColumns = async (newColumnData) => {
     const response = await axios.post(`${BASE_URL}/v1/columns`,newColumnData)
