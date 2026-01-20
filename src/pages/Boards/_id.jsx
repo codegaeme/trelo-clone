@@ -3,9 +3,10 @@ import Appbar from '../../components/AppBar'
 import BoardBar from './BoardBar'
 import BoardContent from './BoardContent'
 import { useEffect, useState } from 'react'
-import { fetchBoardDetailApi, createNewColumns, createNewCards,updateBoardDetailApi } from '~/apis'
+import { fetchBoardDetailApi, createNewColumns, createNewCards, updateBoardDetailApi, updateColumnDetailApi, moveCardDifferentColumnApi, deleteColumnDetailApi } from '~/apis'
 import { isEmpty } from 'lodash'
 import { generatePlaceholderCard } from '~/utils/formatters'
+import { toast } from 'react-toastify'
 // import { mockData } from '~/apis/mock-data';
 
 const Board = () => {
@@ -63,14 +64,65 @@ const Board = () => {
 
         setBoard(newBoard)
     }
-    const moveColumns = async (dndOrderedColumns) => {
+    const moveColumns = (dndOrderedColumns) => {
         const dndOrderedColumnsIds = dndOrderedColumns.map(c => c._id);
         const newBoard = { ...board }
         newBoard.columns = dndOrderedColumns
         newBoard.columnOrderIds = dndOrderedColumnsIds
-        setBoard(newBoard)     
-        await updateBoardDetailApi(newBoard._id,{columnOrderIds:newBoard.columnOrderIds})
+        setBoard(newBoard)
+        updateBoardDetailApi(newBoard._id, { columnOrderIds: newBoard.columnOrderIds })
 
+    }
+    const moveCardInColumn = (dndOrderedCards, dndOrderedCardsIds, columnId) => {
+        const newBoard = { ...board }
+        const columnToUpdate = newBoard.columns.find(column => column._id === columnId)
+
+        if (columnToUpdate) {
+
+            if (columnToUpdate.some(card => card.FE_PlaceholderCard)) {
+                columnToUpdate.cards = [createdCard]
+                columnToUpdate.cardOrderIds = createdCard._id
+            } else {
+
+                columnToUpdate.cards = dndOrderedCards
+                columnToUpdate.cardOrderIds = dndOrderedCardsIds
+            }
+
+            setBoard(newBoard)
+            updateColumnDetailApi(columnId, { cardOrderIds: dndOrderedCardsIds })
+
+
+        }
+    }
+    const moveCardDifferentColumn = (currentCardId, prevColumnId, nextColumnId, dndOrderedColumns) => {
+
+        const newBoard = { ...board }
+        const dndOrderedColumnsIds = dndOrderedColumns.map(c => c._id);
+        newBoard.columns = dndOrderedColumns
+        newBoard.columnOrderIds = dndOrderedColumnsIds
+        setBoard(newBoard)
+        let prevCardOrderIds = dndOrderedColumns.find(c => c._id === prevColumnId)?.cardOrderIds
+        if (prevCardOrderIds[0].includes('placeholder-card')) {
+            prevCardOrderIds = []
+        }
+        moveCardDifferentColumnApi({
+            currentCardId,
+            prevColumnId,
+            prevCardOrderIds,
+            nextColumnId,
+            nextCardOrderIds: dndOrderedColumns.find(c => c._id === nextColumnId)?.cardOrderIds,
+        })
+
+
+    }
+    const deleteColumn = (id) => {
+         const newBoard = { ...board }
+            newBoard.columns = newBoard.columns.filter(c=>c._id !== id)
+            newBoard.columnOrderIds = newBoard.columnOrderIds.filter(_id =>_id !== id )
+            setBoard(newBoard)
+        deleteColumnDetailApi(id).then(res => {
+           toast.success(res?.deleteResult)
+        })
     }
 
 
@@ -78,7 +130,7 @@ const Board = () => {
         <Container disableGutters maxWidth={false} sx={{ height: '100vh', backgroundColor: 'primary.main', width: '100vw', margin: 0, padding: 0 }}>
             <Appbar />
             <BoardBar board={board} />
-            <BoardContent board={board} createNewColumns={createNewColumn} createNewCard={createNewCard} moveColumns={moveColumns} />
+            <BoardContent board={board} createNewColumns={createNewColumn} createNewCard={createNewCard} moveColumns={moveColumns} moveCardInColumn={moveCardInColumn} moveCardDifferentColumn={moveCardDifferentColumn} deleteColumn={deleteColumn} />
 
         </Container>
     )

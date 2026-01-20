@@ -7,14 +7,24 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme.js';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ConfirmProvider } from 'material-ui-confirm';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-      <CssBaseline />
-      <App />
-      <ToastContainer position='top-right' theme='colored' autoClose='3000'/>
+      <ConfirmProvider defaultOptions={{
+        confirmationText: 'Confirm',
+        cancellationText: 'Cancel',
+        allowClose: false,
+        dialogProps: {
+          maxWidth: 'xs'
+        }
+      }}>
+        <CssBaseline />
+        <App />
+        <ToastContainer position='top-right' theme='colored' autoClose='3000' />
+      </ConfirmProvider>
     </ThemeProvider>
   </React.StrictMode>,
 )

@@ -1,8 +1,10 @@
 import { Box } from "@mui/material";
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+
 import Typography from '@mui/material/Typography';
 import theme from "~/theme"; 
-const HeaderColumn = ({columnHeader}) => {
+import MoreColum from "./MoreColumn";
+const HeaderColumn = (props) => {
+    const {columnHeader,deleteColumn} =props
     return (
         <Box sx={{
             height: theme.trello.columnHeaderHeight,
@@ -12,7 +14,8 @@ const HeaderColumn = ({columnHeader}) => {
             justifyContent: 'space-between',
         }}>
             <Typography variant="h6">{columnHeader?.title}</Typography>
-            <MoreHorizIcon sx={{ cursor: 'pointer' }} ></MoreHorizIcon>
+            <MoreColum columnHeader={columnHeader} deleteColumn={deleteColumn}></MoreColum>
+            
         </Box>
     )
 }

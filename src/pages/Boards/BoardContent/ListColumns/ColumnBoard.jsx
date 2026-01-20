@@ -8,7 +8,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { useState } from "react";
 const ColumnBoard = (props) => {
     const [openNewFormAddCard, setOpenNewFormAddCard] = useState(false)
-    const { column ,createNewCard} = props
+    const { column ,createNewCard,deleteColumn} = props
     const orderedColumns = mapOrder(column?.cards, column?.cardOrderIds, '_id')
 
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: column._id, data: { ...column } });
@@ -44,7 +44,7 @@ const ColumnBoard = (props) => {
                     flexShrink: 0
                 }}>
 
-                <HeaderCard columnHeader={column} />
+                <HeaderCard columnHeader={column} deleteColumn={deleteColumn}/>
                 <ListCard columnCart={orderedColumns} newFormAddCard={newFormAddCard} newAddCard= {openNewFormAddCard} createNewCard={createNewCard} column={column}/>
                 <FooterCart newFormAddCard={newFormAddCard} newAddCard= {openNewFormAddCard} />
 

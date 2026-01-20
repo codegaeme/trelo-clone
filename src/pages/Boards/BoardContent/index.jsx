@@ -9,7 +9,7 @@ import CardFul from "./ListColumns/Columns/ListCard/Card/CardFul";
 import { cloneDeep, isEmpty } from "lodash";
 import { generatePlaceholderCard } from "~/utils/formatters";
 import ClearIcon from '@mui/icons-material/Clear';
-import {MouseSensor,TouchSensor} from '~/customLibarys/DndKitSenSor';
+import { MouseSensor, TouchSensor } from '~/customLibarys/DndKitSenSor';
 import { toast } from "react-toastify";
 import { updateBoardDetailApi } from "~/apis";
 
@@ -27,7 +27,7 @@ const BoardContent = (props) => {
     // const sensors = useSensors(pointerSensor)
     const sensors = useSensors(mountSensor, touchSensor)
 
-    const { board ,createNewColumns,createNewCard,moveColumns} = props;
+    const { board, createNewColumns, createNewCard, moveColumns, moveCardInColumn ,moveCardDifferentColumn ,deleteColumn} = props;
     const [orderedColumns, setOrderedColumns] = useState([]);
     const [activeDragItemId, setActiveDragItemId] = useState(null);
     const [activeDragItemType, setActiveDragItemType] = useState(null);
@@ -42,13 +42,13 @@ const BoardContent = (props) => {
 
     //function xu li cap nhat state keo card
     const [newColumnTitle, setNewColumnTitle] = useState("")
-    const addNewColumn = async() => {
+    const addNewColumn = async () => {
         if (!newColumnTitle) {
-           toast.error('Please enter columns title')
+            toast.error('Please enter columns title')
             return
         }
         const newColumnData = {
-            "title":newColumnTitle
+            "title": newColumnTitle
         }
 
         await createNewColumns(newColumnData)
@@ -65,7 +65,8 @@ const BoardContent = (props) => {
         over,
         activeColumn,
         activeDraggingCardId,
-        activeDraggingCardData
+        activeDraggingCardData,
+        triggerFrom
     ) => {
         setOrderedColumns(prevColumns => {
             const overCardIndex = overColumn?.cards.findIndex(card => card._id === overCardId)
@@ -110,6 +111,9 @@ const BoardContent = (props) => {
                 //sap xep lai
                 nextOverColumns.cardOrderIds = nextOverColumns.cards.map(card => card._id)
             }
+            if (triggerFrom==='handelDragEnd') {
+                moveCardDifferentColumn(activeDraggingCardId,oldColumn._id,nextOverColumns._id,nextColums)
+            }
             return nextColums
         })
     }
@@ -153,13 +157,15 @@ const BoardContent = (props) => {
                 over,
                 activeColumn,
                 activeDraggingCardId,
-                activeDraggingCardData
+                activeDraggingCardData,
+                'handelDragOver',
+                
             )
         }
     }
 
     //end
-    const handelDragEnd = async(e) => {
+    const handelDragEnd = async (e) => {
         const { active, over } = e
         if (!active || !over) return
         if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.CARD) {
@@ -183,7 +189,8 @@ const BoardContent = (props) => {
                     over,
                     activeColumn,
                     activeDraggingCardId,
-                    activeDraggingCardData
+                    activeDraggingCardData,
+                    'handelDragEnd'
                 )
             }
             //cung column
@@ -191,14 +198,18 @@ const BoardContent = (props) => {
                 const oldCardIndex = oldColumn?.cards?.findIndex(c => c._id === activeDragItemId)
                 const newCardIndex = overColumn?.cards?.findIndex(c => c._id === overCardId)
                 const dndOrderedCards = arrayMove(oldColumn?.cards, oldCardIndex, newCardIndex)
+                const dndOrderedCardsIds = dndOrderedCards.map(card => card._id)
                 setOrderedColumns(prevColumns => {
                     const nextColumns = cloneDeep(prevColumns)
                     const targetColumn = nextColumns.find(c => c._id === overColumn._id)
 
                     targetColumn.cards = dndOrderedCards
-                    targetColumn.cardOrderIds = dndOrderedCards.map(card => card.id)
+                    targetColumn.cardOrderIds = dndOrderedCardsIds
                     return nextColumns
                 })
+                console.log(dndOrderedCardsIds);
+                
+                moveCardInColumn(dndOrderedCards,dndOrderedCardsIds,oldColumn._id)
             }
         }
         //xu li column
@@ -208,11 +219,11 @@ const BoardContent = (props) => {
                 const oldColumnIndex = orderedColumns.findIndex(c => c._id === active.id)
                 const newColumnIndex = orderedColumns.findIndex(c => c._id === over.id)
                 const dndOrderedColumns = arrayMove(orderedColumns, oldColumnIndex, newColumnIndex)
-                console.log('orderedColumns:',orderedColumns);
-                
-                
+                console.log('orderedColumns:', orderedColumns);
+
+
                 moveColumns(dndOrderedColumns)
-              
+
                 setOrderedColumns(dndOrderedColumns)
             }
         }
@@ -307,7 +318,7 @@ const BoardContent = (props) => {
                 </DragOverlay>
                 <SortableContext items={orderedColumns?.map(c => c._id)} strategy={horizontalListSortingStrategy}>
                     {
-                        orderedColumns?.map(column => <ColumnBoard key={column._id} column={column} createNewCard={createNewCard} />)
+                        orderedColumns?.map(column => <ColumnBoard key={column._id} column={column} createNewCard={createNewCard} deleteColumn={deleteColumn}/>)
                     }
                 </SortableContext>
 
@@ -407,7 +418,7 @@ const BoardContent = (props) => {
                                 sx={{
                                     color: "#4f8aff",
                                     "&:hover": {
-                                        color:'white',
+                                        color: 'white',
                                         backgroundColor: "#446499",
                                     },
                                 }}
