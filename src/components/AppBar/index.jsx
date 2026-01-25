@@ -49,7 +49,7 @@ const Appbar = () => {
 
                     </Box>
                 </Box>
-                <Box display={'flex'} alignItems={'center'} minWidth={'800px'}>
+                <Box display={'flex'} alignItems={'center'} >
                     <SearchBar></SearchBar>
                 </Box>
 

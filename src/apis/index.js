@@ -24,6 +24,7 @@ export const createNewColumns = async (newColumnData) => {
 }
 export const updateColumnDetailApi = async (id, updateData) => {
  
+    
     const response = await axios.put(`${BASE_URL}/v1/columns/${id}`, updateData)
     return response.data
 }

@@ -207,7 +207,6 @@ const BoardContent = (props) => {
                     targetColumn.cardOrderIds = dndOrderedCardsIds
                     return nextColumns
                 })
-                console.log(dndOrderedCardsIds);
                 
                 moveCardInColumn(dndOrderedCards,dndOrderedCardsIds,oldColumn._id)
             }

@@ -74,24 +74,32 @@ const Board = () => {
 
     }
     const moveCardInColumn = (dndOrderedCards, dndOrderedCardsIds, columnId) => {
+        // 1. Clone board để tránh mutate trực tiếp state cũ
         const newBoard = { ...board }
+
+        // 2. Tìm cột cần cập nhật
         const columnToUpdate = newBoard.columns.find(column => column._id === columnId)
 
         if (columnToUpdate) {
+            // KIỂM TRA: Phải dùng columnToUpdate.cards.some
+            const hasPlaceholder = columnToUpdate.cards?.some(card => card.FE_PlaceholderCard)
 
-            if (columnToUpdate.some(card => card.FE_PlaceholderCard)) {
-                columnToUpdate.cards = [createdCard]
-                columnToUpdate.cardOrderIds = createdCard._id
+            if (hasPlaceholder) {
+                // Nếu có placeholder, có thể bạn muốn lọc bỏ nó đi hoặc thay thế
+                // Nhưng thông thường trong hàm MOVE, ta chỉ cần ưu tiên dữ liệu dnd truyền vào
+                columnToUpdate.cards = dndOrderedCards
+                columnToUpdate.cardOrderIds = dndOrderedCardsIds
             } else {
-
+                // Cập nhật dữ liệu mới từ kết quả kéo thả
                 columnToUpdate.cards = dndOrderedCards
                 columnToUpdate.cardOrderIds = dndOrderedCardsIds
             }
 
+            // 3. Cập nhật State để UI render lại
             setBoard(newBoard)
+
+            // 4. Gọi API để lưu vào database
             updateColumnDetailApi(columnId, { cardOrderIds: dndOrderedCardsIds })
-
-
         }
     }
     const moveCardDifferentColumn = (currentCardId, prevColumnId, nextColumnId, dndOrderedColumns) => {
@@ -116,13 +124,29 @@ const Board = () => {
 
     }
     const deleteColumn = (id) => {
-         const newBoard = { ...board }
-            newBoard.columns = newBoard.columns.filter(c=>c._id !== id)
-            newBoard.columnOrderIds = newBoard.columnOrderIds.filter(_id =>_id !== id )
-            setBoard(newBoard)
+        const newBoard = { ...board }
+        newBoard.columns = newBoard.columns.filter(c => c._id !== id)
+        newBoard.columnOrderIds = newBoard.columnOrderIds.filter(_id => _id !== id)
+        setBoard(newBoard)
         deleteColumnDetailApi(id).then(res => {
-           toast.success(res?.deleteResult)
+            toast.success(res?.deleteResult)
         })
+    }
+    if (!board) {
+        return (
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100vh',
+                width: '100vw',
+                gap: '10px'
+            }}>
+                {/* Bạn có thể thay bằng Spinner của Material UI hoặc CSS tự viết */}
+                <div className="spinner"></div>
+                <span>Đang tải dữ liệu từ server (vui lòng chờ 30s - 1p)...</span>
+            </div>
+        )
     }
 
 
